@@ -3,12 +3,14 @@
   "private": true,
   "workspaces": [
     "client",
+    "server",
     "shared"
   ],
   "scripts": {
     "dev": "bun run --cwd client dev",
+    "dev:server": "bun run --cwd server dev",
     "build": "bun run --cwd client build",
-    "typecheck": "tsc --noEmit -p shared/tsconfig.json && tsc --noEmit -p client/tsconfig.json",
+    "typecheck": "tsc --noEmit -p shared/tsconfig.json && tsc --noEmit -p client/tsconfig.json && tsc --noEmit -p server/tsconfig.json",
     "lint": "biome check .",
     "format": "biome format --write ."
   },

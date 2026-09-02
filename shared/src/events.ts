@@ -1,7 +1,8 @@
-import type { Direction, EntityId, TilePos } from "./types";
+import type { Direction, EntityId, PlayerState, TilePos } from "./types";
 
-// Facts emitted by the simulation. Views react to these and never mutate
-// state themselves; in milestone 2 the server broadcasts them verbatim.
+// Facts emitted by the simulation (or by the server, for join/leave).
+// Views react to these and never mutate state themselves; the server
+// broadcasts them verbatim.
 export type GameEvent =
   | {
       type: "entity-moved";
@@ -11,4 +12,7 @@ export type GameEvent =
       facing: Direction;
       durationMs: number;
     }
-  | { type: "entity-turned"; entityId: EntityId; facing: Direction };
+  | { type: "entity-turned"; entityId: EntityId; facing: Direction }
+  | { type: "entity-joined"; player: PlayerState }
+  | { type: "entity-left"; entityId: EntityId }
+  | { type: "entity-said"; entityId: EntityId; name: string; text: string };

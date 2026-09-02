@@ -18,10 +18,10 @@ export class LocalConnection implements GameConnection {
   private readonly state: GameState;
   private readonly listeners: Array<(event: GameEvent) => void> = [];
 
-  constructor(map: MapData) {
+  constructor(map: MapData, name = "Jogador") {
     this.map = map;
     this.state = createGameState();
-    addPlayer(this.state, this.playerId, map.spawn);
+    addPlayer(this.state, this.playerId, name, map.spawn);
   }
 
   getMap(): MapData {

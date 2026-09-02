@@ -12,6 +12,7 @@
         padding: 0;
         background: #111;
         height: 100%;
+        font-family: monospace;
       }
       #game {
         display: flex;
@@ -22,10 +23,109 @@
       canvas {
         image-rendering: pixelated;
       }
+
+      #join {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #111;
+        color: #ddd;
+        z-index: 10;
+      }
+      #join form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 240px;
+        text-align: center;
+      }
+      #join h1 {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: 2px;
+      }
+      #join input,
+      #join button {
+        font: inherit;
+        padding: 8px;
+        background: #222;
+        color: #ddd;
+        border: 1px solid #555;
+      }
+      #join button {
+        cursor: pointer;
+      }
+      #join button:hover {
+        background: #333;
+      }
+      #join-error {
+        min-height: 1em;
+        margin: 0;
+        color: #e07070;
+        font-size: 12px;
+      }
+
+      #chat {
+        position: fixed;
+        left: 8px;
+        bottom: 8px;
+        width: 320px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 12px;
+        z-index: 5;
+      }
+      #chat-log {
+        max-height: 120px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        color: #eee;
+        text-shadow: 1px 1px 0 #000;
+      }
+      #chat-log .system {
+        color: #9ad;
+      }
+      #chat-input {
+        font: inherit;
+        padding: 4px 6px;
+        background: rgba(0, 0, 0, 0.6);
+        color: #eee;
+        border: 1px solid #444;
+      }
+      #chat-input:not(:focus) {
+        opacity: 0.5;
+      }
     </style>
   </head>
   <body>
     <div id="game"></div>
+    <div id="join">
+      <form id="join-form">
+        <h1>innocent</h1>
+        <input
+          id="join-name"
+          maxlength="20"
+          placeholder="Seu nome"
+          autocomplete="off"
+        />
+        <button type="submit">Entrar</button>
+        <p id="join-error"></p>
+      </form>
+    </div>
+    <div id="chat" hidden>
+      <div id="chat-log"></div>
+      <input
+        id="chat-input"
+        maxlength="120"
+        placeholder="Enter para falar"
+        autocomplete="off"
+      />
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

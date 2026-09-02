@@ -9,6 +9,7 @@ export type EntityId = string;
 
 export interface PlayerState {
   id: EntityId;
+  name: string;
   pos: TilePos;
   facing: Direction;
 }
