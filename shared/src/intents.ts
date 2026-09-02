@@ -1,5 +1,7 @@
 import type { Direction } from "./types";
 
-// Everything a client may ask the simulation to do. Milestone 2 adds
-// e.g. { type: "say"; text: string } — these objects become the wire protocol.
-export type Intent = { type: "move"; dir: Direction };
+// Everything a client may ask the simulation to do. These objects are the
+// wire protocol: the client sends them verbatim to the server.
+export type Intent =
+  | { type: "move"; dir: Direction }
+  | { type: "say"; text: string };

@@ -1,4 +1,4 @@
-import { WALK_DURATION_MS } from "../constants";
+import { MAX_CHAT_LENGTH, WALK_DURATION_MS } from "../constants";
 import type { GameEvent } from "../events";
 import type { Intent } from "../intents";
 import { isWalkable, type MapData } from "../map";
@@ -27,9 +27,10 @@ export function createGameState(): GameState {
 export function addPlayer(
   state: GameState,
   id: EntityId,
+  name: string,
   pos: TilePos,
 ): PlayerState {
-  const player: PlayerState = { id, pos: { ...pos }, facing: "down" };
+  const player: PlayerState = { id, name, pos: { ...pos }, facing: "down" };
   state.players[id] = player;
   return player;
 }
@@ -68,6 +69,11 @@ export function applyIntent(
           durationMs: WALK_DURATION_MS,
         },
       ];
+    }
+    case "say": {
+      const text = intent.text.trim().slice(0, MAX_CHAT_LENGTH);
+      if (!text) return [];
+      return [{ type: "entity-said", entityId, name: player.name, text }];
     }
   }
 }
