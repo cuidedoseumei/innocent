@@ -3,6 +3,7 @@ import {
   applyIntent,
   createGameState,
   type EntityId,
+  findFreeSpawn,
   type GameEvent,
   type GameState,
   type Intent,
@@ -34,7 +35,8 @@ export class GameServer {
   }
 
   addPlayer(id: EntityId, name: string): GameEvent {
-    const player = addPlayer(this.state, id, name, this.map.spawn);
+    const spawn = findFreeSpawn(this.map, this.state);
+    const player = addPlayer(this.state, id, name, spawn);
     this.slots.set(id, { pendingMove: null, nextMoveAt: 0 });
     return { type: "entity-joined", player };
   }

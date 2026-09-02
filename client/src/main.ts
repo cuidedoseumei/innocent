@@ -6,6 +6,12 @@ import { LocalConnection } from "./net/local-connection";
 import { WsConnection } from "./net/ws-connection";
 import { requireElement } from "./ui/dom";
 
+declare global {
+  interface Window {
+    innocentDebug?: { connection: GameConnection };
+  }
+}
+
 // Join flow: ask the name in a DOM overlay, connect, and only then boot
 // Phaser with the ready connection. `?local` skips the server (offline dev).
 async function start(): Promise<void> {
@@ -36,6 +42,8 @@ async function start(): Promise<void> {
   });
 
   overlay.remove();
+  // Debug/e2e hook: lets tests read the logical snapshot from outside.
+  window.innocentDebug = { connection };
 
   const game = new Phaser.Game({
     type: Phaser.AUTO,

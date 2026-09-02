@@ -14,7 +14,7 @@ bun run dev          # cliente em http://localhost:5173 (outro terminal)
 
 Abra `http://localhost:5173`, escolha um nome e entre. Ande com as **setas** ou **WASD**; **Enter** abre o chat (Enter envia, Esc fecha). Abra em duas abas para ver o multiplayer.
 
-Para jogar offline sem servidor (simulação local), use `http://localhost:5173/?local`.
+Para jogar offline sem servidor (simulação local), use `http://localhost:5173/?local`. Para simular latência de rede e ver a predição de movimento em ação, use `?lag=150` (ms).
 
 Outros comandos:
 
@@ -49,7 +49,7 @@ cena/views ──(Intent)──▶ GameConnection ──▶ simulação (shared/
 - **`GameConnection`** (`client/src/net/connection.ts`): a costura entre cena e rede. `WsConnection` (padrão) fala WebSocket com o servidor; `LocalConnection` roda a simulação localmente (`?local`). A cena e as views não sabem qual das duas está em uso.
 - **`server/`**: `Bun.serve` + WebSockets (`server/src/index.ts`) em volta de um núcleo sem I/O (`server/src/game-server.ts`) que roda o **mesmo** `applyIntent` de `shared/` num loop de ticks (50ms). O servidor é a autoridade: bufferiza o intent de movimento mais recente por jogador e o aplica respeitando o cooldown de passo, faz broadcast dos `GameEvent`s e o cliente só reage a eles. As mensagens do wire estão em `shared/src/protocol.ts`.
 
-Outra separação importante: a simulação move a posição **lógica** (tile) de forma atômica; a view move a posição **visual** (pixels) com um tween de ~200ms. É essa separação que depois permite reconciliação com o servidor.
+Outra separação importante: a simulação move a posição **lógica** (tile) de forma atômica; a view move a posição **visual** (pixels) com um tween de ~200ms. É essa separação que permite a **predição no cliente**: a `WsConnection` roda o mesmo `applyIntent` localmente e anda na hora, sem esperar o round-trip; quando a resposta do servidor chega, eventos que batem com o previsto são engolidos e divergências (ex.: dois jogadores disputando o mesmo tile) viram um "snap" suave para a posição autoritativa.
 
 ## Roadmap
 

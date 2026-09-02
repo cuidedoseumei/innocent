@@ -3,6 +3,7 @@ import {
   applyIntent,
   createGameState,
   type EntityId,
+  findFreeSpawn,
   type GameEvent,
   type GameState,
   type Intent,
@@ -21,7 +22,7 @@ export class LocalConnection implements GameConnection {
   constructor(map: MapData, name = "Jogador") {
     this.map = map;
     this.state = createGameState();
-    addPlayer(this.state, this.playerId, name, map.spawn);
+    addPlayer(this.state, this.playerId, name, findFreeSpawn(map, this.state));
   }
 
   getMap(): MapData {

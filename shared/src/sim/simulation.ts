@@ -24,6 +24,34 @@ export function createGameState(): GameState {
   return { players: {} };
 }
 
+export function isTileOccupied(state: GameState, pos: TilePos): boolean {
+  for (const player of Object.values(state.players)) {
+    if (player.pos.x === pos.x && player.pos.y === pos.y) return true;
+  }
+  return false;
+}
+
+// Nearest walkable, unoccupied tile starting at map.spawn (BFS), so players
+// don't stack on the same tile when joining. Falls back to the spawn itself
+// if the whole map is somehow full.
+export function findFreeSpawn(map: MapData, state: GameState): TilePos {
+  const queue: TilePos[] = [map.spawn];
+  const seen = new Set<string>([`${map.spawn.x},${map.spawn.y}`]);
+  for (let i = 0; i < queue.length; i++) {
+    const pos = queue[i];
+    if (!pos) break;
+    if (isWalkable(map, pos) && !isTileOccupied(state, pos)) return pos;
+    for (const delta of Object.values(DELTAS)) {
+      const next = { x: pos.x + delta.x, y: pos.y + delta.y };
+      const key = `${next.x},${next.y}`;
+      if (seen.has(key) || !isWalkable(map, next)) continue;
+      seen.add(key);
+      queue.push(next);
+    }
+  }
+  return { ...map.spawn };
+}
+
 export function addPlayer(
   state: GameState,
   id: EntityId,
@@ -49,9 +77,11 @@ export function applyIntent(
       const delta = DELTAS[intent.dir];
       const to = { x: player.pos.x + delta.x, y: player.pos.y + delta.y };
 
-      if (!isWalkable(map, to)) {
-        // Tibia behavior: bumping into a blocked tile only turns the character.
-        if (player.facing === intent.dir) return [];
+      if (!isWalkable(map, to) || isTileOccupied(state, to)) {
+        // Tibia behavior: bumping into a blocked tile (or another player)
+        // only turns the character. Always emit the event, even when the
+        // facing is unchanged: client prediction relies on every applied
+        // move producing exactly one response to reconcile against.
         player.facing = intent.dir;
         return [{ type: "entity-turned", entityId, facing: intent.dir }];
       }
